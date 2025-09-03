@@ -1,0 +1,52 @@
+---
+const { id = "p5-vite", width = 800, height = 600 } = Astro.props;
+---
+
+<div id={id} data-width={width} data-height={height}></div>
+
+<script>
+  // This runs on the client and Vite will handle the import
+  async function initP5() {
+    const p5Module = await import("p5");
+    const p5 = p5Module.default;
+
+    const container = document.getElementById("p5-vite");
+    const width = parseInt(container.dataset.width);
+    const height = parseInt(container.dataset.height);
+
+    const sketch = (p) => {
+      let balls = [];
+
+      p.setup = () => {
+        p.createCanvas(width, height);
+        p.background(255);
+
+        // Create bouncing balls
+        for (let i = 0; i < 10; i++) {
+          balls.push({
+            x: p.random(width),
+            y: p.random(height),
+            vx: p.random(-3, 3),
+            vy: p.random(-3, 3),
+            color: p.color(p.random(255), p.random(255), p.random(255)),
+          });
+        }
+      };
+
+      p.draw = () => {
+        p.fill(0, 25);
+        p.stroke(0, 50);
+        p.circle(p.random(width), p.random(height), 16);
+      };
+    };
+
+    new p5(sketch, container);
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initP5);
+  } else {
+    initP5();
+  }
+</script>
